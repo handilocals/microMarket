@@ -23,6 +23,10 @@ interface Listing {
     locality: string;
     zipcode: string;
   };
+  reference_number?: string;
+  is_bargainable?: boolean;
+  is_reserved?: boolean;
+  reserved_for_user_id?: string | null;
 }
 
 interface MarketplaceListingCardProps {
@@ -85,10 +89,29 @@ const MarketplaceListingCard = ({
 
       {/* Content */}
       <View className="p-3">
-        <Text className="text-lg font-bold mb-1">{listing.title}</Text>
-        <Text className="text-blue-500 text-xl font-bold mb-2">
-          {formatPrice(listing.price)}
-        </Text>
+        <View className="flex-row justify-between items-start">
+          <View className="flex-1">
+            <Text className="text-lg font-bold mb-1">{listing.title}</Text>
+            <Text className="text-xs text-gray-500 mb-1">
+              Ref: {listing.reference_number || "N/A"}
+            </Text>
+          </View>
+          {listing.is_reserved && (
+            <View className="bg-amber-500 px-2 py-1 rounded">
+              <Text className="text-white text-xs font-bold">Reserved</Text>
+            </View>
+          )}
+        </View>
+        <View className="flex-row items-center justify-between mb-2">
+          <Text className="text-blue-500 text-xl font-bold">
+            {formatPrice(listing.price)}
+          </Text>
+          {listing.is_bargainable && (
+            <View className="bg-green-100 px-2 py-1 rounded">
+              <Text className="text-green-700 text-xs">Negotiable</Text>
+            </View>
+          )}
+        </View>
 
         <View className="flex-row justify-between items-center mb-2">
           <View className="flex-row items-center">

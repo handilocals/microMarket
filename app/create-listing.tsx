@@ -7,6 +7,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Switch,
 } from "react-native";
 import { Stack, router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -35,6 +36,7 @@ export default function CreateListingScreen() {
     locality: "",
     zipcode: "",
   });
+  const [isBargainable, setIsBargainable] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -103,6 +105,7 @@ export default function CreateListingScreen() {
           user_id: user?.id,
           status: "active",
           location,
+          is_bargainable: isBargainable,
         })
         .select()
         .single();
@@ -262,6 +265,24 @@ export default function CreateListingScreen() {
                 </View>
               </TouchableOpacity>
             )}
+          </View>
+        </View>
+
+        {/* Bargainable Option */}
+        <View className="mb-4">
+          <Text className="text-base font-semibold mb-2">
+            Allow Price Bargaining
+          </Text>
+          <View className="flex-row items-center">
+            <Switch
+              value={isBargainable}
+              onValueChange={setIsBargainable}
+              trackColor={{ false: "#d1d5db", true: "#93c5fd" }}
+              thumbColor={isBargainable ? "#3b82f6" : "#f4f4f5"}
+            />
+            <Text className="ml-2 text-gray-700">
+              {isBargainable ? "Buyers can bargain" : "Fixed price"}
+            </Text>
           </View>
         </View>
 

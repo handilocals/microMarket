@@ -6,6 +6,9 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Dimensions,
+  TextInput,
+  Modal,
+  Alert,
 } from "react-native";
 import { Image as ExpoImage } from "expo-image";
 import { Stack, useLocalSearchParams, router } from "expo-router";
@@ -18,6 +21,10 @@ import {
   Tag,
   ChevronLeft,
   ChevronRight,
+  Heart,
+  MessageCircle,
+  DollarSign,
+  Check,
 } from "lucide-react-native";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../contexts/AuthContext";
@@ -43,6 +50,10 @@ interface Listing {
     locality: string;
     zipcode: string;
   };
+  reference_number?: string;
+  is_bargainable?: boolean;
+  is_reserved?: boolean;
+  reserved_for_user_id?: string | null;
 }
 
 export default function ListingDetailScreen() {
@@ -51,13 +62,40 @@ export default function ListingDetailScreen() {
   const [listing, setListing] = useState<Listing | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [message, setMessage] = useState("");
+  const [showBargainModal, setShowBargainModal] = useState(false);
+  const [offerPrice, setOfferPrice] = useState("");
+  const [isReserving, setIsReserving] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
     if (id) {
       fetchListing(id as string);
+      checkIfFavorited(id as string);
     }
   }, [id]);
+
+  const checkIfFavorited = async (listingId: string) => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("marketplace_saved_listings")
+        .select("id")
+        .eq("listing_id", listingId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (data) {
+        setIsFavorited(true);
+      }
+    } catch (error) {
+      // Not favorited or error
+      console.log("Not favorited or error checking favorite status");
+    }
+  };
 
   const fetchListing = async (listingId: string) => {
     try {
@@ -94,6 +132,10 @@ export default function ListingDetailScreen() {
             locality: "",
             zipcode: "",
           },
+          reference_number: data.reference_number || "",
+          is_bargainable: data.is_bargainable || false,
+          is_reserved: data.is_reserved || false,
+          reserved_for_user_id: data.reserved_for_user_id || null,
         });
       }
     } catch (error) {
@@ -133,8 +175,133 @@ export default function ListingDetailScreen() {
   };
 
   const handleContactSeller = () => {
-    console.log("Contact seller", listing?.user_id);
-    // Implement contact seller functionality
+    setShowMessageModal(true);
+  };
+
+  const handleSendMessage = async () => {
+    if (!message.trim() || !user || !listing) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from("marketplace_messages").insert({
+        listing_id: listing.id,
+        sender_id: user.id,
+        receiver_id: listing.user_id,
+        message: message,
+      });
+
+      if (error) throw error;
+
+      Alert.alert("Success", "Message sent successfully!");
+      setMessage("");
+      setShowMessageModal(false);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      Alert.alert("Error", "Failed to send message. Please try again.");
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!user || !listing) return;
+
+    try {
+      if (isFavorited) {
+        // Remove from favorites
+        const { error } = await supabase
+          .from("marketplace_saved_listings")
+          .delete()
+          .eq("listing_id", listing.id)
+          .eq("user_id", user.id);
+
+        if (error) throw error;
+        setIsFavorited(false);
+      } else {
+        // Add to favorites
+        const { error } = await supabase
+          .from("marketplace_saved_listings")
+          .insert({
+            listing_id: listing.id,
+            user_id: user.id,
+          });
+
+        if (error) throw error;
+        setIsFavorited(true);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      Alert.alert("Error", "Failed to update favorites. Please try again.");
+    }
+  };
+
+  const handleBargain = () => {
+    if (!listing?.is_bargainable) return;
+    setOfferPrice(listing.price.toString());
+    setShowBargainModal(true);
+  };
+
+  const handleSubmitOffer = async () => {
+    if (!offerPrice.trim() || !user || !listing) {
+      return;
+    }
+
+    try {
+      const offerMessage = `I'd like to make an offer of ${offerPrice} for your item (${listing.reference_number}).`;
+
+      const { error } = await supabase.from("marketplace_messages").insert({
+        listing_id: listing.id,
+        sender_id: user.id,
+        receiver_id: listing.user_id,
+        message: offerMessage,
+      });
+
+      if (error) throw error;
+
+      Alert.alert("Success", "Your offer has been sent to the seller!");
+      setOfferPrice("");
+      setShowBargainModal(false);
+    } catch (error) {
+      console.error("Error sending offer:", error);
+      Alert.alert("Error", "Failed to send offer. Please try again.");
+    }
+  };
+
+  const handleReserveItem = async () => {
+    if (!user || !listing || user.id !== listing.user_id) return;
+
+    try {
+      setIsReserving(true);
+
+      const { error } = await supabase
+        .from("marketplace_listings")
+        .update({
+          is_reserved: !listing.is_reserved,
+          reserved_for_user_id: listing.is_reserved
+            ? null
+            : listing.reserved_for_user_id,
+        })
+        .eq("id", listing.id);
+
+      if (error) throw error;
+
+      // Refresh listing data
+      fetchListing(listing.id);
+
+      Alert.alert(
+        "Success",
+        listing.is_reserved
+          ? "Item is no longer reserved"
+          : "Item has been marked as reserved",
+      );
+    } catch (error) {
+      console.error("Error reserving item:", error);
+      Alert.alert(
+        "Error",
+        "Failed to update reservation status. Please try again.",
+      );
+    } finally {
+      setIsReserving(false);
+    }
   };
 
   const handlePreviousImage = () => {
@@ -187,9 +354,18 @@ export default function ListingDetailScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <ArrowLeft size={24} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleShare}>
-          <Share size={24} color="#000" />
-        </TouchableOpacity>
+        <View className="flex-row">
+          <TouchableOpacity onPress={handleToggleFavorite} className="mr-4">
+            <Heart
+              size={24}
+              color={isFavorited ? "#ef4444" : "#000"}
+              fill={isFavorited ? "#ef4444" : "none"}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleShare}>
+            <Share size={24} color="#000" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView className="flex-1">
@@ -251,10 +427,29 @@ export default function ListingDetailScreen() {
 
         {/* Listing Details */}
         <View className="p-4">
-          <Text className="text-2xl font-bold mb-2">{listing.title}</Text>
-          <Text className="text-blue-500 text-2xl font-bold mb-4">
-            {formatPrice(listing.price)}
-          </Text>
+          <View className="flex-row justify-between items-start mb-2">
+            <View className="flex-1">
+              <Text className="text-2xl font-bold">{listing.title}</Text>
+              <Text className="text-sm text-gray-500">
+                Ref: {listing.reference_number}
+              </Text>
+            </View>
+            {listing.is_reserved && (
+              <View className="bg-amber-500 px-3 py-1 rounded-md">
+                <Text className="text-white font-bold">Reserved</Text>
+              </View>
+            )}
+          </View>
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-blue-500 text-2xl font-bold">
+              {formatPrice(listing.price)}
+            </Text>
+            {listing.is_bargainable && (
+              <View className="bg-green-100 px-3 py-1 rounded-md">
+                <Text className="text-green-700">Price Negotiable</Text>
+              </View>
+            )}
+          </View>
 
           {/* Category and Date */}
           <View className="flex-row mb-4">
@@ -301,15 +496,146 @@ export default function ListingDetailScreen() {
         </View>
       </ScrollView>
 
-      {/* Contact Button */}
+      {/* Action Buttons */}
       <View className="p-4 border-t border-gray-200">
-        <TouchableOpacity
-          className="w-full p-4 bg-blue-500 rounded-lg items-center"
-          onPress={handleContactSeller}
-        >
-          <Text className="text-white font-bold">Contact Seller</Text>
-        </TouchableOpacity>
+        {user?.id === listing.user_id ? (
+          /* Seller Actions */
+          <TouchableOpacity
+            className={`w-full p-4 ${listing.is_reserved ? "bg-amber-500" : "bg-blue-500"} rounded-lg items-center flex-row justify-center`}
+            onPress={handleReserveItem}
+            disabled={isReserving}
+          >
+            {isReserving ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <>
+                <Check size={20} color="#fff" className="mr-2" />
+                <Text className="text-white font-bold">
+                  {listing.is_reserved
+                    ? "Mark as Available"
+                    : "Mark as Reserved"}
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+        ) : (
+          /* Buyer Actions */
+          <View className="flex-row">
+            <TouchableOpacity
+              className="flex-1 p-4 bg-blue-500 rounded-lg items-center mr-2 flex-row justify-center"
+              onPress={handleContactSeller}
+            >
+              <MessageCircle size={20} color="#fff" className="mr-2" />
+              <Text className="text-white font-bold">Message</Text>
+            </TouchableOpacity>
+
+            {listing.is_bargainable && (
+              <TouchableOpacity
+                className="flex-1 p-4 bg-green-500 rounded-lg items-center ml-2 flex-row justify-center"
+                onPress={handleBargain}
+              >
+                <DollarSign size={20} color="#fff" className="mr-2" />
+                <Text className="text-white font-bold">Make Offer</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
       </View>
+
+      {/* Message Modal */}
+      <Modal
+        visible={showMessageModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowMessageModal(false)}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="bg-white rounded-t-3xl p-4">
+            <Text className="text-xl font-bold mb-4">Message Seller</Text>
+            <Text className="text-gray-500 mb-2">
+              About: {listing?.title} (Ref: {listing?.reference_number})
+            </Text>
+
+            <TextInput
+              className="border border-gray-300 rounded-md p-3 h-32 mb-4"
+              placeholder="Write your message here..."
+              value={message}
+              onChangeText={setMessage}
+              multiline
+              textAlignVertical="top"
+            />
+
+            <View className="flex-row">
+              <TouchableOpacity
+                className="flex-1 p-4 bg-gray-200 rounded-lg items-center mr-2"
+                onPress={() => setShowMessageModal(false)}
+              >
+                <Text className="font-bold">Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="flex-1 p-4 bg-blue-500 rounded-lg items-center ml-2"
+                onPress={handleSendMessage}
+              >
+                <Text className="text-white font-bold">Send</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Bargain Modal */}
+      <Modal
+        visible={showBargainModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowBargainModal(false)}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="bg-white rounded-t-3xl p-4">
+            <Text className="text-xl font-bold mb-4">Make an Offer</Text>
+            <Text className="text-gray-500 mb-2">
+              Item: {listing?.title} (Ref: {listing?.reference_number})
+            </Text>
+            <Text className="text-gray-500 mb-4">
+              Listed Price: {listing ? formatPrice(listing.price) : "$0.00"}
+            </Text>
+
+            <View className="flex-row items-center border border-gray-300 rounded-md overflow-hidden mb-4">
+              <View className="bg-gray-100 p-3">
+                <Text className="font-bold">$</Text>
+              </View>
+              <TextInput
+                className="flex-1 p-3"
+                placeholder="0.00"
+                value={offerPrice}
+                onChangeText={(text) => {
+                  // Only allow numbers and decimal point
+                  const filtered = text.replace(/[^0-9.]/g, "");
+                  setOfferPrice(filtered);
+                }}
+                keyboardType="decimal-pad"
+              />
+            </View>
+
+            <View className="flex-row">
+              <TouchableOpacity
+                className="flex-1 p-4 bg-gray-200 rounded-lg items-center mr-2"
+                onPress={() => setShowBargainModal(false)}
+              >
+                <Text className="font-bold">Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="flex-1 p-4 bg-green-500 rounded-lg items-center ml-2"
+                onPress={handleSubmitOffer}
+              >
+                <Text className="text-white font-bold">Submit Offer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

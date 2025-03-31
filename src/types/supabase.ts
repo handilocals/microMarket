@@ -71,7 +71,13 @@ export type Database = {
           created_at: string | null
           description: string
           id: string
+          is_bargainable: boolean | null
+          is_reserved: boolean | null
+          location: Json | null
           price: number
+          reference_number: string | null
+          reserved_for_user_id: string | null
+          search_vector: unknown | null
           status: string | null
           title: string
           updated_at: string | null
@@ -82,7 +88,13 @@ export type Database = {
           created_at?: string | null
           description: string
           id?: string
+          is_bargainable?: boolean | null
+          is_reserved?: boolean | null
+          location?: Json | null
           price: number
+          reference_number?: string | null
+          reserved_for_user_id?: string | null
+          search_vector?: unknown | null
           status?: string | null
           title: string
           updated_at?: string | null
@@ -93,7 +105,13 @@ export type Database = {
           created_at?: string | null
           description?: string
           id?: string
+          is_bargainable?: boolean | null
+          is_reserved?: boolean | null
+          location?: Json | null
           price?: number
+          reference_number?: string | null
+          reserved_for_user_id?: string | null
+          search_vector?: unknown | null
           status?: string | null
           title?: string
           updated_at?: string | null
@@ -105,6 +123,44 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "marketplace_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          listing_id: string
+          message: string
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          listing_id: string
+          message: string
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          listing_id?: string
+          message?: string
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_messages_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
             referencedColumns: ["id"]
           },
         ]

@@ -5,9 +5,12 @@ import {
   StatusBar,
   ActivityIndicator,
   ScrollView,
+  TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
+import { Search } from "lucide-react-native";
 
 // Import components
 import Header from "../components/Header";
@@ -55,13 +58,15 @@ export default function MarketplaceScreen() {
   const [distanceRadius, setDistanceRadius] = useState<number>(50);
   const [sortOption, setSortOption] = useState<string>("newest");
   const [showFilters, setShowFilters] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     if (user) {
       fetchCategories();
       fetchListings();
     }
-  }, [user, selectedCategory, sortOption]);
+  }, [user, selectedCategory, sortOption, searchQuery]);
 
   const fetchCategories = async () => {
     try {
@@ -93,6 +98,22 @@ export default function MarketplaceScreen() {
       // Apply category filter if selected
       if (selectedCategory) {
         query = query.eq("category_id", selectedCategory);
+      }
+
+      // Apply search filter if provided
+      if (searchQuery) {
+        // Check if it's a reference number search
+        if (searchQuery.toUpperCase().startsWith("MKT-")) {
+          query = query.ilike(
+            "reference_number",
+            `%${searchQuery.toUpperCase()}%`,
+          );
+        } else {
+          // Search in title and description
+          query = query.or(
+            `title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`,
+          );
+        }
       }
 
       // Apply price range filter
@@ -141,6 +162,10 @@ export default function MarketplaceScreen() {
             locality: "",
             zipcode: "",
           },
+          reference_number: listing.reference_number || "",
+          is_bargainable: listing.is_bargainable || false,
+          is_reserved: listing.is_reserved || false,
+          reserved_for_user_id: listing.reserved_for_user_id || null,
         }));
 
         // Filter by distance if user location is available
@@ -199,6 +224,34 @@ export default function MarketplaceScreen() {
         onFilterPress={toggleFilters}
         showFilterIcon
       />
+
+      {/* Search Bar */}
+      <View className="px-4 py-2 border-b border-gray-200">
+        <View className="flex-row items-center bg-gray-100 rounded-full px-3 py-2">
+          <Search size={20} color="#6b7280" />
+          <TextInput
+            className="flex-1 ml-2 text-base"
+            placeholder="Search by title, description or reference #"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            returnKeyType="search"
+            onSubmitEditing={() => {
+              setIsSearching(true);
+              fetchListings().finally(() => setIsSearching(false));
+            }}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchQuery("");
+                fetchListings();
+              }}
+            >
+              <X size={20} color="#6b7280" />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
 
       {/* Filters */}
       {showFilters && (
