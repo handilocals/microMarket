@@ -68,7 +68,7 @@ const MarketplaceFilters = ({
   };
 
   const formatPrice = (price: number) => {
-    return `$${price.toLocaleString()}`;
+    return `${price.toLocaleString()}`;
   };
 
   const sortOptions = [
@@ -89,50 +89,68 @@ const MarketplaceFilters = ({
   };
 
   return (
-    <View className="bg-white border-b border-gray-200">
-      <ScrollView className="p-4">
-        <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-lg font-bold">Filters</Text>
-          <TouchableOpacity onPress={onClose} className="p-2">
-            <X size={20} color="#000" />
+    <View className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+      <ScrollView className="p-5">
+        <View className="flex-row justify-between items-center mb-5">
+          <Text className="text-lg font-bold text-gray-800 dark:text-gray-100">
+            Filters
+          </Text>
+          <TouchableOpacity
+            onPress={onClose}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <X size={20} className="text-gray-700 dark:text-gray-300" />
           </TouchableOpacity>
         </View>
 
         {/* Category Filter */}
         <View className="mb-6">
-          <Text className="text-base font-semibold mb-2">Category</Text>
+          <Text className="text-base font-semibold mb-2 text-gray-800 dark:text-gray-200">
+            Category
+          </Text>
           <TouchableOpacity
-            className="flex-row justify-between items-center p-3 border border-gray-300 rounded-md"
+            className="flex-row justify-between items-center p-3.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
             onPress={() => setShowCategoryDropdown(!showCategoryDropdown)}
           >
-            <Text>{getCategoryName(localCategory)}</Text>
-            <ChevronDown size={20} color="#000" />
+            <Text className="text-gray-800 dark:text-gray-200">
+              {getCategoryName(localCategory)}
+            </Text>
+            <ChevronDown
+              size={18}
+              className="text-gray-500 dark:text-gray-400"
+            />
           </TouchableOpacity>
 
           {showCategoryDropdown && (
-            <View className="border border-gray-300 rounded-md mt-1 bg-white">
+            <View className="border border-gray-300 dark:border-gray-700 rounded-lg mt-1 bg-white dark:bg-gray-800 shadow-sm">
               <TouchableOpacity
-                className="p-3 flex-row justify-between items-center"
+                className="p-3.5 flex-row justify-between items-center border-b border-gray-100 dark:border-gray-700"
                 onPress={() => {
                   setLocalCategory(null);
                   setShowCategoryDropdown(false);
                 }}
               >
-                <Text>All Categories</Text>
-                {localCategory === null && <Check size={18} color="#1DA1F2" />}
+                <Text className="text-gray-800 dark:text-gray-200">
+                  All Categories
+                </Text>
+                {localCategory === null && (
+                  <Check size={18} className="text-primary-500" />
+                )}
               </TouchableOpacity>
               {categories.map((category) => (
                 <TouchableOpacity
                   key={category.id}
-                  className="p-3 flex-row justify-between items-center"
+                  className="p-3.5 flex-row justify-between items-center border-b border-gray-100 dark:border-gray-700 last:border-b-0"
                   onPress={() => {
                     setLocalCategory(category.id);
                     setShowCategoryDropdown(false);
                   }}
                 >
-                  <Text>{category.name}</Text>
+                  <Text className="text-gray-800 dark:text-gray-200">
+                    {category.name}
+                  </Text>
                   {localCategory === category.id && (
-                    <Check size={18} color="#1DA1F2" />
+                    <Check size={18} className="text-primary-500" />
                   )}
                 </TouchableOpacity>
               ))}
@@ -142,10 +160,16 @@ const MarketplaceFilters = ({
 
         {/* Price Range Filter */}
         <View className="mb-6">
-          <Text className="text-base font-semibold mb-2">Price Range</Text>
-          <View className="flex-row justify-between mb-2">
-            <Text>{formatPrice(localPriceRange[0])}</Text>
-            <Text>{formatPrice(localPriceRange[1])}</Text>
+          <Text className="text-base font-semibold mb-2 text-gray-800 dark:text-gray-200">
+            Price Range
+          </Text>
+          <View className="flex-row justify-between mb-3">
+            <Text className="text-gray-700 dark:text-gray-300 font-medium">
+              {formatPrice(localPriceRange[0])}
+            </Text>
+            <Text className="text-gray-700 dark:text-gray-300 font-medium">
+              {formatPrice(localPriceRange[1])}
+            </Text>
           </View>
           <Slider
             minValue={0}
@@ -160,10 +184,16 @@ const MarketplaceFilters = ({
 
         {/* Distance Filter */}
         <View className="mb-6">
-          <Text className="text-base font-semibold mb-2">Distance</Text>
-          <View className="flex-row justify-between mb-2">
-            <Text>0 miles</Text>
-            <Text>{localDistance} miles</Text>
+          <Text className="text-base font-semibold mb-2 text-gray-800 dark:text-gray-200">
+            Distance
+          </Text>
+          <View className="flex-row justify-between mb-3">
+            <Text className="text-gray-700 dark:text-gray-300 font-medium">
+              0 miles
+            </Text>
+            <Text className="text-gray-700 dark:text-gray-300 font-medium">
+              {localDistance} miles
+            </Text>
           </View>
           <Slider
             minValue={0}
@@ -176,29 +206,38 @@ const MarketplaceFilters = ({
 
         {/* Sort Options */}
         <View className="mb-6">
-          <Text className="text-base font-semibold mb-2">Sort By</Text>
+          <Text className="text-base font-semibold mb-2 text-gray-800 dark:text-gray-200">
+            Sort By
+          </Text>
           <TouchableOpacity
-            className="flex-row justify-between items-center p-3 border border-gray-300 rounded-md"
+            className="flex-row justify-between items-center p-3.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
             onPress={() => setShowSortDropdown(!showSortDropdown)}
           >
-            <Text>{getSortLabel(localSortOption)}</Text>
-            <ChevronDown size={20} color="#000" />
+            <Text className="text-gray-800 dark:text-gray-200">
+              {getSortLabel(localSortOption)}
+            </Text>
+            <ChevronDown
+              size={18}
+              className="text-gray-500 dark:text-gray-400"
+            />
           </TouchableOpacity>
 
           {showSortDropdown && (
-            <View className="border border-gray-300 rounded-md mt-1 bg-white">
+            <View className="border border-gray-300 dark:border-gray-700 rounded-lg mt-1 bg-white dark:bg-gray-800 shadow-sm">
               {sortOptions.map((option) => (
                 <TouchableOpacity
                   key={option.value}
-                  className="p-3 flex-row justify-between items-center"
+                  className="p-3.5 flex-row justify-between items-center border-b border-gray-100 dark:border-gray-700 last:border-b-0"
                   onPress={() => {
                     setLocalSortOption(option.value);
                     setShowSortDropdown(false);
                   }}
                 >
-                  <Text>{option.label}</Text>
+                  <Text className="text-gray-800 dark:text-gray-200">
+                    {option.label}
+                  </Text>
                   {localSortOption === option.value && (
-                    <Check size={18} color="#1DA1F2" />
+                    <Check size={18} className="text-primary-500" />
                   )}
                 </TouchableOpacity>
               ))}
@@ -207,15 +246,17 @@ const MarketplaceFilters = ({
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-row justify-between mt-4">
+        <View className="flex-row justify-between mt-5 space-x-3">
           <TouchableOpacity
-            className="flex-1 mr-2 p-3 border border-gray-300 rounded-md items-center"
+            className="flex-1 p-3.5 border border-gray-300 dark:border-gray-700 rounded-lg items-center bg-white dark:bg-gray-800"
             onPress={handleReset}
           >
-            <Text className="font-semibold">Reset</Text>
+            <Text className="font-semibold text-gray-700 dark:text-gray-300">
+              Reset
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="flex-1 ml-2 p-3 bg-blue-500 rounded-md items-center"
+            className="flex-1 p-3.5 bg-primary-500 dark:bg-primary-600 rounded-lg items-center shadow-sm"
             onPress={handleApply}
           >
             <Text className="font-semibold text-white">Apply</Text>

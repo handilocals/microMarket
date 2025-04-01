@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StatusBar, ActivityIndicator } from "react-native";
+import { View, StatusBar, ActivityIndicator, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
@@ -8,6 +8,7 @@ import Header from "../components/Header";
 import PostList from "../components/PostList";
 import BottomNavigation from "../components/BottomNavigation";
 import ComposeButton from "../components/ComposeButton";
+import Trending from "../src/components/Trending";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
 
@@ -312,7 +313,13 @@ export default function HomeScreen() {
   const handleComposePress = () => {
     console.log("Compose button pressed");
     // Navigate to compose screen
-    // router.push('/compose');
+    router.push("/compose");
+  };
+
+  const handleTopicPress = (topic: string) => {
+    console.log(`Topic ${topic} pressed`);
+    // Navigate to search results for this topic
+    // router.push(`/search?q=${encodeURIComponent(topic)}`);
   };
 
   if (isLoading && !isRefreshing) {
@@ -330,23 +337,33 @@ export default function HomeScreen() {
       {/* Header */}
       <Header />
 
-      {/* Post List */}
-      <View className="flex-1">
-        <PostList
-          posts={posts}
-          isRefreshing={isRefreshing}
-          onRefresh={handleRefresh}
-          onPostPress={handlePostPress}
-          onProfilePress={handleProfilePress}
-          onLike={handleLike}
-          onDislike={handleDislike}
-          onComment={handleComment}
-          onRepost={handleRepost}
-          onShare={handleShare}
-          onBookmark={handleBookmark}
-          onMorePress={handleMorePress}
-          onLoadMore={handleLoadMore}
-        />
+      {/* Content */}
+      <View className="flex-1 flex-row">
+        {/* Main Feed */}
+        <View className="flex-1">
+          <PostList
+            posts={posts}
+            isRefreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            onPostPress={handlePostPress}
+            onProfilePress={handleProfilePress}
+            onLike={handleLike}
+            onDislike={handleDislike}
+            onComment={handleComment}
+            onRepost={handleRepost}
+            onShare={handleShare}
+            onBookmark={handleBookmark}
+            onMorePress={handleMorePress}
+            onLoadMore={handleLoadMore}
+          />
+        </View>
+
+        {/* Sidebar (only visible on larger screens) */}
+        <View className="w-72 pl-4 pr-2 hidden md:flex">
+          <ScrollView className="flex-1">
+            <Trending onTopicPress={handleTopicPress} />
+          </ScrollView>
+        </View>
       </View>
 
       {/* Compose Button */}

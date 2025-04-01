@@ -36,21 +36,23 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white p-6">
+    <View className="flex-1 bg-background p-6">
       <TouchableOpacity
         onPress={() => router.back()}
         className="p-2 rounded-full w-10 h-10 flex items-center justify-center mb-6"
       >
-        <ArrowLeft size={24} color="#000" />
+        <ArrowLeft size={24} color="#0f172a" />
       </TouchableOpacity>
 
-      <Text className="text-3xl font-bold mb-8">Welcome back</Text>
+      <Text className="text-3xl font-bold mb-8 text-secondary-900">
+        Welcome back
+      </Text>
 
       <View className="space-y-4 mb-6">
         <View>
-          <Text className="text-gray-600 mb-2">Email</Text>
+          <Text className="text-secondary-600 mb-2">Email</Text>
           <TextInput
-            className="border border-gray-300 rounded-lg p-3 bg-gray-50"
+            className="input"
             placeholder="Enter your email"
             value={email}
             onChangeText={setEmail}
@@ -60,9 +62,9 @@ export default function LoginScreen() {
         </View>
 
         <View>
-          <Text className="text-gray-600 mb-2">Password</Text>
+          <Text className="text-secondary-600 mb-2">Password</Text>
           <TextInput
-            className="border border-gray-300 rounded-lg p-3 bg-gray-50"
+            className="input"
             placeholder="Enter your password"
             value={password}
             onChangeText={setPassword}
@@ -74,7 +76,7 @@ export default function LoginScreen() {
       <TouchableOpacity
         onPress={handleLogin}
         disabled={loading}
-        className={`rounded-lg p-4 ${loading ? "bg-blue-300" : "bg-blue-500"}`}
+        className={`btn ${loading ? "bg-primary-300" : "btn-primary"}`}
       >
         {loading ? (
           <ActivityIndicator color="white" />
@@ -87,7 +89,7 @@ export default function LoginScreen() {
         onPress={() => router.push("/auth/register")}
         className="mt-4"
       >
-        <Text className="text-center text-blue-500">
+        <Text className="text-center text-primary-600">
           Don't have an account? Sign up
         </Text>
       </TouchableOpacity>

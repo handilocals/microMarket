@@ -210,26 +210,35 @@ const LocationDropdowns = ({
       onRequestClose={onClose}
     >
       <View className="flex-1 bg-black/50 justify-end">
-        <View className="bg-white rounded-t-xl h-2/3">
-          <View className="flex-row justify-between items-center p-4 border-b border-gray-200">
-            <Text className="text-lg font-bold">{title}</Text>
-            <TouchableOpacity onPress={onClose}>
-              <X size={24} color="#000" />
+        <View className="bg-white dark:bg-gray-900 rounded-t-xl h-2/3">
+          <View className="flex-row justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800">
+            <Text className="text-lg font-bold text-gray-800 dark:text-gray-100">
+              {title}
+            </Text>
+            <TouchableOpacity
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+              onPress={onClose}
+            >
+              <X size={22} className="text-gray-700 dark:text-gray-300" />
             </TouchableOpacity>
           </View>
 
           <View className="p-4">
-            <View className="flex-row items-center bg-gray-100 rounded-md px-3 mb-4">
-              <Search size={20} color="#6b7280" />
+            <View className="flex-row items-center bg-gray-100 dark:bg-gray-800 rounded-lg px-3 mb-4">
+              <Search size={18} className="text-gray-500 dark:text-gray-400" />
               <TextInput
-                className="flex-1 p-2"
+                className="flex-1 p-2 text-gray-800 dark:text-gray-200"
                 placeholder={`Search ${title.toLowerCase()}...`}
+                placeholderTextColor="#9ca3af"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
               {searchQuery ? (
-                <TouchableOpacity onPress={() => setSearchQuery("")}>
-                  <X size={16} color="#6b7280" />
+                <TouchableOpacity
+                  className="p-1 rounded-full"
+                  onPress={() => setSearchQuery("")}
+                >
+                  <X size={16} className="text-gray-500 dark:text-gray-400" />
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -239,19 +248,23 @@ const LocationDropdowns = ({
                 items.map((item, index) => (
                   <TouchableOpacity
                     key={index}
-                    className="p-4 border-b border-gray-100"
+                    className="p-4 border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
                     onPress={() => {
                       onSelect(item);
                       setSearchQuery("");
                       onClose();
                     }}
                   >
-                    <Text className="text-base">{item}</Text>
+                    <Text className="text-base text-gray-800 dark:text-gray-200">
+                      {item}
+                    </Text>
                   </TouchableOpacity>
                 ))
               ) : (
                 <View className="p-4 items-center">
-                  <Text className="text-gray-500">No items found</Text>
+                  <Text className="text-gray-500 dark:text-gray-400">
+                    No items found
+                  </Text>
                 </View>
               )}
             </ScrollView>
@@ -262,27 +275,33 @@ const LocationDropdowns = ({
   );
 
   return (
-    <View>
+    <View className="space-y-4">
       {/* State Dropdown */}
-      <View className="mb-3">
-        <Text className="text-sm text-gray-500 mb-1">State</Text>
+      <View>
+        <Text className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+          State
+        </Text>
         <TouchableOpacity
-          className="flex-row justify-between items-center p-3 border border-gray-300 rounded-md"
+          className="flex-row justify-between items-center p-3.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
           onPress={() => {
             setSearchQuery("");
             setShowStateModal(true);
           }}
         >
-          <Text>{location.state || "Select State"}</Text>
-          <ChevronDown size={20} color="#000" />
+          <Text className="text-gray-800 dark:text-gray-200">
+            {location.state || "Select State"}
+          </Text>
+          <ChevronDown size={18} className="text-gray-500 dark:text-gray-400" />
         </TouchableOpacity>
       </View>
 
       {/* City Dropdown - Only enabled if state is selected */}
-      <View className="mb-3">
-        <Text className="text-sm text-gray-500 mb-1">City</Text>
+      <View>
+        <Text className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+          City
+        </Text>
         <TouchableOpacity
-          className={`flex-row justify-between items-center p-3 border border-gray-300 rounded-md ${!location.state ? "opacity-50" : ""}`}
+          className={`flex-row justify-between items-center p-3.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 ${!location.state ? "opacity-50" : ""}`}
           onPress={() => {
             if (location.state) {
               setSearchQuery("");
@@ -291,18 +310,20 @@ const LocationDropdowns = ({
           }}
           disabled={!location.state}
         >
-          <Text>{location.city || "Select City"}</Text>
-          <ChevronDown size={20} color="#000" />
+          <Text className="text-gray-800 dark:text-gray-200">
+            {location.city || "Select City"}
+          </Text>
+          <ChevronDown size={18} className="text-gray-500 dark:text-gray-400" />
         </TouchableOpacity>
       </View>
 
       {/* Locality Dropdown - Only enabled if city is selected */}
-      <View className="mb-3">
-        <Text className="text-sm text-gray-500 mb-1">
+      <View>
+        <Text className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
           Locality/Neighborhood
         </Text>
         <TouchableOpacity
-          className={`flex-row justify-between items-center p-3 border border-gray-300 rounded-md ${!location.city ? "opacity-50" : ""}`}
+          className={`flex-row justify-between items-center p-3.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 ${!location.city ? "opacity-50" : ""}`}
           onPress={() => {
             if (location.city) {
               setSearchQuery("");
@@ -311,17 +332,22 @@ const LocationDropdowns = ({
           }}
           disabled={!location.city}
         >
-          <Text>{location.locality || "Select Locality"}</Text>
-          <ChevronDown size={20} color="#000" />
+          <Text className="text-gray-800 dark:text-gray-200">
+            {location.locality || "Select Locality"}
+          </Text>
+          <ChevronDown size={18} className="text-gray-500 dark:text-gray-400" />
         </TouchableOpacity>
       </View>
 
       {/* Zipcode Input */}
-      <View className="mb-3">
-        <Text className="text-sm text-gray-500 mb-1">Zipcode</Text>
+      <View>
+        <Text className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+          Zipcode
+        </Text>
         <TextInput
-          className="p-3 border border-gray-300 rounded-md"
+          className="p-3.5 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
           placeholder="Enter Zipcode"
+          placeholderTextColor="#9ca3af"
           value={location.zipcode}
           onChangeText={(text) => onLocationChange("zipcode", text)}
           keyboardType="numeric"

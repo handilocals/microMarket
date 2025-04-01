@@ -47,9 +47,9 @@ const BottomNavigation = ({ activeTab = "home" }: BottomNavigationProps) => {
 
   return (
     <BlurView
-      intensity={80}
+      intensity={60}
       tint="light"
-      className="absolute bottom-0 w-full border-t border-gray-200 bg-white/80"
+      className="absolute bottom-0 w-full border-t border-border bg-white/90"
     >
       <View className="flex-row justify-around items-center h-16 px-2 bg-white/5">
         {tabs.map((tab) => {
@@ -59,16 +59,16 @@ const BottomNavigation = ({ activeTab = "home" }: BottomNavigationProps) => {
           return (
             <TouchableOpacity
               key={tab.name}
-              className={`flex-1 items-center justify-center py-1 ${isActive ? "border-t-2 border-blue-500" : ""}`}
+              className={`flex-1 items-center justify-center py-1 ${isActive ? "border-t-2 border-primary-600" : ""}`}
               onPress={() => handleNavigation(tab.route)}
             >
               <IconComponent
-                size={24}
-                color={isActive ? "#3b82f6" : "#6b7280"}
+                size={22}
+                color={isActive ? "#0284c7" : "#64748b"}
                 strokeWidth={isActive ? 2.5 : 2}
               />
               <Text
-                className={`text-xs mt-1 ${isActive ? "text-blue-500 font-semibold" : "text-gray-500"}`}
+                className={`text-xs mt-1 ${isActive ? "text-primary-600 font-semibold" : "text-secondary-500"}`}
               >
                 {tab.label}
               </Text>

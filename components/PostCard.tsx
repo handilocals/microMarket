@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
+import { View, Text, TouchableOpacity, Pressable } from "react-native";
 import {
   Heart,
   MessageCircle,
@@ -121,9 +121,9 @@ const PostCard = ({
   };
 
   return (
-    <View className="bg-white border-b border-gray-200 p-4">
+    <View className="card mb-2 border-b border-border">
       {/* Header with avatar and user info */}
-      <View className="flex-row mb-2">
+      <View className="flex-row mb-3">
         <Pressable onPress={onProfilePress}>
           <ExpoImage
             source={{ uri: avatar }}
@@ -136,15 +136,15 @@ const PostCard = ({
           <View className="flex-row justify-between items-start">
             <View className="flex-row items-center">
               <Pressable onPress={onProfilePress}>
-                <Text className="font-bold text-base">{username}</Text>
+                <Text className="font-bold text-secondary-800">{username}</Text>
               </Pressable>
-              <Text className="text-gray-500 ml-1">{handle}</Text>
-              <Text className="text-gray-500 ml-1">·</Text>
-              <Text className="text-gray-500 ml-1">{timestamp}</Text>
+              <Text className="text-secondary-500 ml-1">{handle}</Text>
+              <Text className="text-secondary-400 ml-1">·</Text>
+              <Text className="text-secondary-500 ml-1">{timestamp}</Text>
             </View>
 
             <TouchableOpacity onPress={onMorePress} className="p-1">
-              <MoreHorizontal size={18} color="#6b7280" />
+              <MoreHorizontal size={18} color="#64748b" />
             </TouchableOpacity>
           </View>
         </View>
@@ -152,31 +152,31 @@ const PostCard = ({
 
       {/* Post content */}
       <Pressable onPress={onPostPress}>
-        <Text className="text-base mb-2">{content}</Text>
+        <Text className="text-secondary-800 mb-3">{content}</Text>
 
         {imageUrl && (
           <ExpoImage
             source={{ uri: imageUrl }}
-            className="w-full h-48 rounded-lg mb-2"
+            className="w-full h-48 rounded-lg mb-3"
             contentFit="cover"
           />
         )}
       </Pressable>
 
       {/* Engagement actions */}
-      <View className="flex-row justify-between mt-3">
+      <View className="flex-row justify-between mt-3 pt-2 border-t border-secondary-100">
         <TouchableOpacity onPress={onComment} className="flex-row items-center">
-          <MessageCircle size={18} color="#6b7280" />
-          <Text className="ml-1 text-gray-500">{comments}</Text>
+          <MessageCircle size={18} color="#64748b" />
+          <Text className="ml-1 text-secondary-500">{comments}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={handleRepost}
           className="flex-row items-center"
         >
-          <Repeat2 size={18} color={reposted ? "#10b981" : "#6b7280"} />
+          <Repeat2 size={18} color={reposted ? "#10b981" : "#64748b"} />
           <Text
-            className={`ml-1 ${reposted ? "text-green-500" : "text-gray-500"}`}
+            className={`ml-1 ${reposted ? "text-success" : "text-secondary-500"}`}
           >
             {repostsCount}
           </Text>
@@ -188,10 +188,12 @@ const PostCard = ({
         >
           <Heart
             size={18}
-            color={liked ? "#ef4444" : "#6b7280"}
+            color={liked ? "#ef4444" : "#64748b"}
             fill={liked ? "#ef4444" : "none"}
           />
-          <Text className={`ml-1 ${liked ? "text-red-500" : "text-gray-500"}`}>
+          <Text
+            className={`ml-1 ${liked ? "text-error" : "text-secondary-500"}`}
+          >
             {likesCount}
           </Text>
         </TouchableOpacity>
@@ -202,11 +204,11 @@ const PostCard = ({
         >
           <ThumbsDown
             size={18}
-            color={disliked ? "#3b82f6" : "#6b7280"}
+            color={disliked ? "#3b82f6" : "#64748b"}
             fill={disliked ? "#3b82f6" : "none"}
           />
           <Text
-            className={`ml-1 ${disliked ? "text-blue-500" : "text-gray-500"}`}
+            className={`ml-1 ${disliked ? "text-info" : "text-secondary-500"}`}
           >
             {dislikesCount}
           </Text>
@@ -218,13 +220,13 @@ const PostCard = ({
         >
           <Bookmark
             size={18}
-            color={bookmarked ? "#f59e0b" : "#6b7280"}
+            color={bookmarked ? "#f59e0b" : "#64748b"}
             fill={bookmarked ? "#f59e0b" : "none"}
           />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={onShare} className="flex-row items-center">
-          <Share size={18} color="#6b7280" />
+          <Share size={18} color="#64748b" />
         </TouchableOpacity>
       </View>
     </View>

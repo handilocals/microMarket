@@ -61,13 +61,16 @@ export default function ComposeScreen() {
 
   return (
     <View
-      className="flex-1 bg-white"
+      className="flex-1 bg-white dark:bg-gray-900"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
     >
       {/* Header */}
-      <View className="flex-row justify-between items-center p-4 border-b border-gray-200">
-        <TouchableOpacity onPress={() => router.back()}>
-          <X size={24} color="#000" />
+      <View className="flex-row justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800">
+        <TouchableOpacity
+          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+          onPress={() => router.back()}
+        >
+          <X size={22} className="text-gray-800 dark:text-gray-200" />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -75,12 +78,12 @@ export default function ComposeScreen() {
           disabled={
             !content.trim() || isSubmitting || content.length > MAX_CHARS
           }
-          className={`rounded-full px-4 py-2 ${!content.trim() || isSubmitting || content.length > MAX_CHARS ? "bg-blue-300" : "bg-blue-500"}`}
+          className={`rounded-full px-5 py-2 ${!content.trim() || isSubmitting || content.length > MAX_CHARS ? "bg-primary-300 dark:bg-primary-700" : "bg-primary-500 dark:bg-primary-600"} shadow-sm`}
         >
           {isSubmitting ? (
             <ActivityIndicator size="small" color="white" />
           ) : (
-            <Text className="text-white font-semibold">Post</Text>
+            <Text className="text-white font-semibold text-center">Post</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -88,27 +91,28 @@ export default function ComposeScreen() {
       {/* Compose Area */}
       <View className="flex-1 p-4">
         <TextInput
-          className="flex-1 text-base"
+          className="flex-1 text-base text-gray-800 dark:text-gray-200 placeholder:text-gray-500 dark:placeholder:text-gray-400"
           placeholder="What's happening?"
           multiline
           value={content}
           onChangeText={setContent}
           maxLength={MAX_CHARS + 10} // Allow typing a bit more but show error
           autoFocus
+          placeholderTextColor="#9ca3af"
         />
       </View>
 
       {/* Footer */}
-      <View className="flex-row justify-between items-center p-4 border-t border-gray-200">
+      <View className="flex-row justify-between items-center p-4 border-t border-gray-200 dark:border-gray-800">
         <View className="flex-row">
-          <TouchableOpacity className="mr-4">
-            <ImageIcon size={24} color="#1DA1F2" />
+          <TouchableOpacity className="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <ImageIcon size={22} className="text-primary-500" />
           </TouchableOpacity>
         </View>
 
         <View className="flex-row items-center">
           <Text
-            className={`mr-2 ${content.length > MAX_CHARS ? "text-red-500" : "text-gray-500"}`}
+            className={`mr-2 ${content.length > MAX_CHARS ? "text-red-500" : "text-gray-500 dark:text-gray-400"} font-medium`}
           >
             {content.length}/{MAX_CHARS}
           </Text>

@@ -25,9 +25,7 @@ const ComposeButton = ({
     if (onPress) {
       onPress();
     } else {
-      // This would navigate to a compose screen when implemented
-      // router.push('/compose');
-      console.log("Navigate to compose screen");
+      router.push("/compose");
     }
   };
 
@@ -39,7 +37,7 @@ const ComposeButton = ({
     >
       <View
         style={{ width: size, height: size }}
-        className="rounded-full bg-[#1DA1F2] flex items-center justify-center shadow-lg"
+        className="rounded-full bg-primary-500 dark:bg-primary-600 flex items-center justify-center shadow-lg elevation-5"
       >
         <PenSquare size={24} color="white" />
       </View>

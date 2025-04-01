@@ -5,6 +5,7 @@ import {
   Animated,
   StyleSheet,
   Dimensions,
+  useColorScheme,
 } from "react-native";
 
 interface SliderProps {
@@ -25,6 +26,8 @@ const Slider = ({
   const [sliderWidth, setSliderWidth] = useState(0);
   const thumbRadius = 12;
   const trackHeight = 4;
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
 
   // Create animated values for each thumb
   const thumbPositions = values.map(
@@ -107,6 +110,7 @@ const Slider = ({
             width: thumbRadius * 2,
             height: thumbRadius * 2,
             borderRadius: thumbRadius,
+            backgroundColor: isDark ? "#3B82F6" : "#2563EB",
           },
         ]}
         {...panResponders[index].panHandlers}
@@ -124,6 +128,7 @@ const Slider = ({
               left: thumbPositions[0],
               right: sliderWidth - thumbPositions[1].__getValue(),
               height: trackHeight,
+              backgroundColor: isDark ? "#3B82F6" : "#2563EB",
             },
           ]}
         />
@@ -145,6 +150,7 @@ const Slider = ({
           styles.track,
           {
             height: trackHeight,
+            backgroundColor: isDark ? "#4B5563" : "#E5E7EB",
           },
         ]}
       />
@@ -161,18 +167,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12, // To account for thumb radius
   },
   track: {
-    backgroundColor: "#E0E0E0",
     width: "100%",
     borderRadius: 2,
   },
   highlight: {
     position: "absolute",
-    backgroundColor: "#1DA1F2",
     borderRadius: 2,
   },
   thumb: {
     position: "absolute",
-    backgroundColor: "#1DA1F2",
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
