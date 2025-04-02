@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { Home, ShoppingBag, Bell, User } from "lucide-react-native";
 import { BlurView } from "expo-blur";
@@ -46,12 +46,8 @@ const BottomNavigation = ({ activeTab = "home" }: BottomNavigationProps) => {
   };
 
   return (
-    <BlurView
-      intensity={60}
-      tint="light"
-      className="absolute bottom-0 w-full border-t border-border bg-white/90"
-    >
-      <View className="flex-row justify-around items-center h-16 px-2 bg-white/5">
+    <BlurView intensity={60} tint="light" style={styles.container}>
+      <View style={styles.tabBar}>
         {tabs.map((tab) => {
           const isActive = currentTab === tab.name;
           const IconComponent = tab.icon;
@@ -59,7 +55,7 @@ const BottomNavigation = ({ activeTab = "home" }: BottomNavigationProps) => {
           return (
             <TouchableOpacity
               key={tab.name}
-              className={`flex-1 items-center justify-center py-1 ${isActive ? "border-t-2 border-primary-600" : ""}`}
+              style={[styles.tab, isActive && styles.activeTab]}
               onPress={() => handleNavigation(tab.route)}
             >
               <IconComponent
@@ -68,7 +64,7 @@ const BottomNavigation = ({ activeTab = "home" }: BottomNavigationProps) => {
                 strokeWidth={isActive ? 2.5 : 2}
               />
               <Text
-                className={`text-xs mt-1 ${isActive ? "text-primary-600 font-semibold" : "text-secondary-500"}`}
+                style={[styles.tabLabel, isActive && styles.activeTabLabel]}
               >
                 {tab.label}
               </Text>
@@ -79,5 +75,43 @@ const BottomNavigation = ({ activeTab = "home" }: BottomNavigationProps) => {
     </BlurView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    borderTopWidth: 1,
+    borderTopColor: "#E2E8F0",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+  },
+  tabBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    height: 64,
+    paddingHorizontal: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+  },
+  tab: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 4,
+  },
+  activeTab: {
+    borderTopWidth: 2,
+    borderTopColor: "#0284C7",
+  },
+  tabLabel: {
+    fontSize: 12,
+    marginTop: 4,
+    color: "#64748B",
+  },
+  activeTabLabel: {
+    color: "#0284C7",
+    fontWeight: "600",
+  },
+});
 
 export default BottomNavigation;

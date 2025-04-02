@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
+  StyleSheet,
 } from "react-native";
 import { TrendingUp, Hash } from "lucide-react-native";
 import { supabase } from "../../lib/supabase";
@@ -76,14 +77,14 @@ const Trending = ({ onTopicPress = () => {} }: TrendingProps) => {
 
   const renderTrendingTopic = ({ item }: { item: TrendingTopic }) => (
     <TouchableOpacity
-      className="py-3 px-1"
+      style={styles.topicItem}
       onPress={() => onTopicPress(item.name)}
     >
-      <View className="flex-row items-center">
-        <Hash size={16} className="text-primary-500 mr-2" />
-        <Text className="text-secondary-800 font-medium">{item.name}</Text>
+      <View style={styles.topicHeader}>
+        <Hash size={16} color="#0EA5E9" style={styles.hashIcon} />
+        <Text style={styles.topicName}>{item.name}</Text>
       </View>
-      <Text className="text-secondary-500 text-sm ml-6">
+      <Text style={styles.postCount}>
         {item.post_count} {item.post_count === 1 ? "post" : "posts"}
       </Text>
     </TouchableOpacity>
@@ -91,12 +92,10 @@ const Trending = ({ onTopicPress = () => {} }: TrendingProps) => {
 
   if (isLoading) {
     return (
-      <View className="bg-white dark:bg-gray-900 rounded-lg p-4 mb-4">
-        <View className="flex-row items-center mb-3">
-          <TrendingUp size={18} className="text-primary-500 mr-2" />
-          <Text className="text-lg font-bold text-secondary-800 dark:text-secondary-200">
-            Trending Topics
-          </Text>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TrendingUp size={18} color="#0EA5E9" style={styles.headerIcon} />
+          <Text style={styles.headerTitle}>Trending Topics</Text>
         </View>
         <ActivityIndicator size="small" color="#1DA1F2" />
       </View>
@@ -105,46 +104,107 @@ const Trending = ({ onTopicPress = () => {} }: TrendingProps) => {
 
   if (error) {
     return (
-      <View className="bg-white dark:bg-gray-900 rounded-lg p-4 mb-4">
-        <View className="flex-row items-center mb-3">
-          <TrendingUp size={18} className="text-primary-500 mr-2" />
-          <Text className="text-lg font-bold text-secondary-800 dark:text-secondary-200">
-            Trending Topics
-          </Text>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TrendingUp size={18} color="#0EA5E9" style={styles.headerIcon} />
+          <Text style={styles.headerTitle}>Trending Topics</Text>
         </View>
-        <Text className="text-error">{error}</Text>
+        <Text style={styles.errorText}>{error}</Text>
         <TouchableOpacity
-          className="mt-2 py-2 px-4 bg-primary-50 rounded-full self-start"
+          style={styles.retryButton}
           onPress={fetchTrendingTopics}
         >
-          <Text className="text-primary-500">Try Again</Text>
+          <Text style={styles.retryButtonText}>Try Again</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View className="bg-white dark:bg-gray-900 rounded-lg p-4 mb-4">
-      <View className="flex-row items-center mb-3">
-        <TrendingUp size={18} className="text-primary-500 mr-2" />
-        <Text className="text-lg font-bold text-secondary-800 dark:text-secondary-200">
-          Trending Topics
-        </Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TrendingUp size={18} color="#0EA5E9" style={styles.headerIcon} />
+        <Text style={styles.headerTitle}>Trending Topics</Text>
       </View>
       <FlatList
         data={trendingTopics}
         renderItem={renderTrendingTopic}
         keyExtractor={(item) => item.id}
         scrollEnabled={false}
-        ItemSeparatorComponent={() => (
-          <View className="border-b border-secondary-100 dark:border-secondary-800" />
-        )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-      <TouchableOpacity className="mt-2 self-end">
-        <Text className="text-primary-500">See more</Text>
+      <TouchableOpacity style={styles.seeMoreButton}>
+        <Text style={styles.seeMoreText}>See more</Text>
       </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  headerIcon: {
+    marginRight: 8,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#1E293B",
+  },
+  topicItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+  },
+  topicHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  hashIcon: {
+    marginRight: 8,
+  },
+  topicName: {
+    color: "#1E293B",
+    fontWeight: "500",
+  },
+  postCount: {
+    color: "#64748B",
+    fontSize: 14,
+    marginLeft: 24,
+  },
+  separator: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#E2E8F0",
+  },
+  seeMoreButton: {
+    alignSelf: "flex-end",
+    marginTop: 8,
+  },
+  seeMoreText: {
+    color: "#0EA5E9",
+  },
+  errorText: {
+    color: "#EF4444",
+  },
+  retryButton: {
+    marginTop: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: "#EFF6FF",
+    borderRadius: 9999,
+    alignSelf: "flex-start",
+  },
+  retryButtonText: {
+    color: "#0EA5E9",
+  },
+});
 
 export default Trending;

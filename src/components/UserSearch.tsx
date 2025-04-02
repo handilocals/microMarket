@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
+  StyleSheet,
 } from "react-native";
 import { Search, X, User } from "lucide-react-native";
 import { Image as ExpoImage } from "expo-image";
@@ -90,7 +91,7 @@ const UserSearch = ({
 
   const renderUserItem = ({ item }: { item: UserProfile }) => (
     <TouchableOpacity
-      className="flex-row items-center py-3 px-2"
+      style={styles.userItem}
       onPress={() => handleUserSelect(item.id, item.username)}
     >
       <ExpoImage
@@ -99,18 +100,13 @@ const UserSearch = ({
             item.avatar ||
             "https://api.dicebear.com/7.x/avataaars/svg?seed=anonymous",
         }}
-        className="w-10 h-10 rounded-full mr-3"
+        style={styles.avatar}
         contentFit="cover"
       />
-      <View className="flex-1">
-        <Text className="font-bold text-secondary-800 dark:text-secondary-200">
-          {item.username}
-        </Text>
+      <View style={styles.userInfo}>
+        <Text style={styles.username}>{item.username}</Text>
         {item.bio && (
-          <Text
-            className="text-secondary-500 dark:text-secondary-400 text-sm"
-            numberOfLines={1}
-          >
+          <Text style={styles.userBio} numberOfLines={1}>
             {item.bio}
           </Text>
         )}
@@ -120,12 +116,15 @@ const UserSearch = ({
 
   return (
     <View
-      className={`bg-white dark:bg-gray-900 ${isModal ? "flex-1" : "w-full"}`}
+      style={[
+        styles.container,
+        isModal ? styles.modalContainer : styles.fullWidth,
+      ]}
     >
-      <View className="flex-row items-center border border-secondary-200 dark:border-secondary-700 rounded-full px-3 py-2 mb-2">
-        <Search size={18} className="text-secondary-400 mr-2" />
+      <View style={styles.searchBar}>
+        <Search size={18} color="#94a3b8" style={styles.searchIcon} />
         <TextInput
-          className="flex-1 text-secondary-800 dark:text-secondary-200"
+          style={styles.searchInput}
           placeholder="Search users..."
           placeholderTextColor="#94a3b8"
           value={searchQuery}
@@ -133,25 +132,25 @@ const UserSearch = ({
         />
         {searchQuery.length > 0 && (
           <TouchableOpacity onPress={clearSearch}>
-            <X size={18} className="text-secondary-400" />
+            <X size={18} color="#94a3b8" />
           </TouchableOpacity>
         )}
       </View>
 
       {isLoading && (
-        <View className="py-4 items-center">
+        <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color="#1DA1F2" />
         </View>
       )}
 
       {error && (
-        <View className="py-4 items-center">
-          <Text className="text-error mb-2">{error}</Text>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity
-            className="py-2 px-4 bg-primary-50 rounded-full"
+            style={styles.retryButton}
             onPress={() => searchUsers(searchQuery)}
           >
-            <Text className="text-primary-500">Try Again</Text>
+            <Text style={styles.retryButtonText}>Try Again</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -160,9 +159,9 @@ const UserSearch = ({
         !error &&
         searchResults.length === 0 &&
         searchQuery.length > 0 && (
-          <View className="py-4 items-center">
-            <User size={24} className="text-secondary-400 mb-2" />
-            <Text className="text-secondary-500 dark:text-secondary-400">
+          <View style={styles.noResultsContainer}>
+            <User size={24} color="#94a3b8" style={styles.noResultsIcon} />
+            <Text style={styles.noResultsText}>
               No users found matching "{searchQuery}"
             </Text>
           </View>
@@ -173,13 +172,98 @@ const UserSearch = ({
           data={searchResults}
           renderItem={renderUserItem}
           keyExtractor={(item) => item.id}
-          ItemSeparatorComponent={() => (
-            <View className="border-b border-secondary-100 dark:border-secondary-800" />
-          )}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#FFFFFF",
+  },
+  modalContainer: {
+    flex: 1,
+  },
+  fullWidth: {
+    width: "100%",
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    borderRadius: 9999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    color: "#1E293B",
+  },
+  loadingContainer: {
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  errorContainer: {
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  errorText: {
+    color: "#EF4444",
+    marginBottom: 8,
+  },
+  retryButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: "#EFF6FF",
+    borderRadius: 9999,
+  },
+  retryButtonText: {
+    color: "#3B82F6",
+  },
+  noResultsContainer: {
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  noResultsIcon: {
+    marginBottom: 8,
+  },
+  noResultsText: {
+    color: "#64748B",
+  },
+  userItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
+  userInfo: {
+    flex: 1,
+  },
+  username: {
+    fontWeight: "bold",
+    color: "#1E293B",
+  },
+  userBio: {
+    color: "#64748B",
+    fontSize: 14,
+  },
+  separator: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#F1F5F9",
+  },
+});
 
 export default UserSearch;

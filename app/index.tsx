@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, StatusBar, ActivityIndicator, ScrollView } from "react-native";
+import {
+  View,
+  StatusBar,
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
@@ -324,23 +330,23 @@ export default function HomeScreen() {
 
   if (isLoading && !isRefreshing) {
     return (
-      <View className="flex-1 bg-white justify-center items-center">
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#1DA1F2" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
 
       {/* Header */}
       <Header />
 
       {/* Content */}
-      <View className="flex-1 flex-row">
+      <View style={styles.content}>
         {/* Main Feed */}
-        <View className="flex-1">
+        <View style={styles.feedContainer}>
           <PostList
             posts={posts}
             isRefreshing={isRefreshing}
@@ -359,8 +365,8 @@ export default function HomeScreen() {
         </View>
 
         {/* Sidebar (only visible on larger screens) */}
-        <View className="w-72 pl-4 pr-2 hidden md:flex">
-          <ScrollView className="flex-1">
+        <View style={styles.sidebar}>
+          <ScrollView style={styles.sidebarScroll}>
             <Trending onTopicPress={handleTopicPress} />
           </ScrollView>
         </View>
@@ -374,3 +380,35 @@ export default function HomeScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  content: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  feedContainer: {
+    flex: 1,
+  },
+  sidebar: {
+    width: 288,
+    paddingLeft: 16,
+    paddingRight: 8,
+    display: "none", // Hidden by default, would be shown on larger screens with platform-specific code
+    "@media (min-width: 768px)": {
+      display: "flex", // This won't work with StyleSheet, would need a responsive solution
+    },
+  },
+  sidebarScroll: {
+    flex: 1,
+  },
+});

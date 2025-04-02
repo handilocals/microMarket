@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Modal, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+  StyleSheet,
+} from "react-native";
 import { Home, Search, Bell, X } from "lucide-react-native";
 import UserSearch from "../src/components/UserSearch";
 import { router } from "expo-router";
@@ -15,19 +22,17 @@ const Header = () => {
   };
 
   return (
-    <View className="flex-row justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-      <Text className="text-xl font-bold text-primary-500 dark:text-primary-400">
-        Home
-      </Text>
-      <View className="flex-row space-x-4">
+    <View style={styles.header}>
+      <Text style={styles.title}>Home</Text>
+      <View style={styles.iconContainer}>
         <TouchableOpacity
-          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+          style={styles.iconButton}
           onPress={() => setSearchModalVisible(true)}
         >
-          <Search size={20} className="text-gray-700 dark:text-gray-300" />
+          <Search size={20} color="#4B5563" />
         </TouchableOpacity>
-        <TouchableOpacity className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-          <Bell size={20} className="text-gray-700 dark:text-gray-300" />
+        <TouchableOpacity style={styles.iconButton}>
+          <Bell size={20} color="#4B5563" />
         </TouchableOpacity>
       </View>
 
@@ -38,23 +43,18 @@ const Header = () => {
         visible={searchModalVisible}
         onRequestClose={() => setSearchModalVisible(false)}
       >
-        <View className="flex-1 bg-black/50">
-          <View className="flex-1 mt-10 bg-white dark:bg-gray-900 rounded-t-3xl">
-            <View className="flex-row justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800">
-              <Text className="text-xl font-bold text-secondary-800 dark:text-secondary-200">
-                Search Users
-              </Text>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Search Users</Text>
               <TouchableOpacity
                 onPress={() => setSearchModalVisible(false)}
-                className="p-2 rounded-full bg-secondary-100 dark:bg-secondary-800"
+                style={styles.closeButton}
               >
-                <X
-                  size={20}
-                  className="text-secondary-600 dark:text-secondary-400"
-                />
+                <X size={20} color="#4B5563" />
               </TouchableOpacity>
             </View>
-            <View className="flex-1 p-4">
+            <View style={styles.modalBody}>
               <UserSearch
                 onUserSelect={handleUserSelect}
                 onClose={() => setSearchModalVisible(false)}
@@ -67,5 +67,64 @@ const Header = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
+    backgroundColor: "#FFFFFF",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#0EA5E9",
+  },
+  iconContainer: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  iconButton: {
+    padding: 8,
+    borderRadius: 9999,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    flex: 1,
+    marginTop: 40,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#1F2937",
+  },
+  closeButton: {
+    padding: 8,
+    borderRadius: 9999,
+    backgroundColor: "#F3F4F6",
+  },
+  modalBody: {
+    flex: 1,
+    padding: 16,
+  },
+});
 
 export default Header;

@@ -5,6 +5,7 @@ import {
   FlatList,
   RefreshControl,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import PostCard from "./PostCard";
 
@@ -157,7 +158,7 @@ const PostList = ({
   const renderFooter = () => {
     if (!isLoading) return null;
     return (
-      <View className="py-4 flex items-center justify-center">
+      <View style={styles.loadingFooter}>
         <ActivityIndicator size="large" color="#1DA1F2" />
       </View>
     );
@@ -166,17 +167,15 @@ const PostList = ({
   const renderEmptyList = () => {
     if (isLoading) return null;
     return (
-      <View className="flex-1 items-center justify-center py-10">
-        <Text className="text-gray-500 text-lg">No posts yet</Text>
-        <Text className="text-gray-400 text-base mt-2">
-          Posts will appear here
-        </Text>
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>No posts yet</Text>
+        <Text style={styles.emptySubtext}>Posts will appear here</Text>
       </View>
     );
   };
 
   return (
-    <View className="flex-1 bg-white">
+    <View style={styles.container}>
       <FlatList
         data={posts}
         renderItem={renderItem}
@@ -194,5 +193,33 @@ const PostList = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  loadingFooter: {
+    paddingVertical: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
+  emptyText: {
+    color: "#6B7280",
+    fontSize: 18,
+  },
+  emptySubtext: {
+    color: "#9CA3AF",
+    fontSize: 16,
+    marginTop: 8,
+  },
+});
 
 export default PostList;
