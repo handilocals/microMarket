@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { Home, Search, Bell, X } from "lucide-react-native";
-import UserSearch from "../src/components/UserSearch";
+import UserSearch from "../components/UserSearch";
 import { router } from "expo-router";
 
 const Header = () => {

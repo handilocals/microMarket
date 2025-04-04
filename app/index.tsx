@@ -14,7 +14,7 @@ import Header from "../components/Header";
 import PostList from "../components/PostList";
 import BottomNavigation from "../components/BottomNavigation";
 import ComposeButton from "../components/ComposeButton";
-import Trending from "../src/components/Trending";
+import Trending from "../components/Trending";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
 
@@ -126,7 +126,7 @@ export default function HomeScreen() {
   const handlePostPress = (postId: string) => {
     console.log(`Post ${postId} pressed`);
     // Navigate to post detail screen
-    // router.push(`/post/${postId}`);
+    router.push(`/post/${postId}`);
   };
 
   const handleProfilePress = (username: string) => {
